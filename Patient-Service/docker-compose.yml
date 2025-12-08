@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  patient-service-db:
+    image: postgres:15
+    container_name: patient-service-db
+    restart: always
+    environment:
+      POSTGRES_DB: patientdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - patient-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d patientdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - microservices-net
+
+  patient-service:
+    build: .
+    container_name: patient-service
+    depends_on:
+      patient-service-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/patientdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVER_PORT: 8082
+
+      # AUTH-SERVICE URL FOR FEIGN/JWT/AUTH CALLS
+      AUTH_SERVICE_URL: http://auth-service:8081
+
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-net
+
+volumes:
+  patient-db-data:
+
+networks:
+  microservices-net:
+    external: true

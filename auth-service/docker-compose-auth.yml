@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  auth-service-db:
+    image: postgres:15
+    container_name: auth-service-db
+    restart: always
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d authdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - microservices-net
+
+  auth-service:
+    build: .
+    container_name: auth-service
+    depends_on:
+      auth-service-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/authdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-net
+
+volumes:
+  auth-db-data:
+
+networks:
+  microservices-net:
+    external: true
