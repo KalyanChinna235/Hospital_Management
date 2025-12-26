@@ -1,0 +1,22 @@
+services:
+  auth-service-db:
+    image: postgres:15
+    container_name: auth-service-db
+    restart: always
+    ports:
+      - "5001:5432"
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: user_admin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  auth_db_data:
