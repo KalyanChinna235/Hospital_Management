@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -9,82 +8,86 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version> <!-- your Spring Boot version -->
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.5.6</version>
+		<relativePath/>
 	</parent>
 
-	<groupId>com.billing_service</groupId>
-	<artifactId>billing-service</artifactId>
+	<groupId>com.patient_service</groupId>
+	<artifactId>patient-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Billing-Service</name>
-	<description>Demo project for Spring Boot + gRPC</description>
 
 	<properties>
-		<java.version>21</java.version>  <!-- Java version you are using -->
-		<!-- You may add other properties if needed -->
+		<java.version>21</java.version>
+		<grpc.version>1.76.0</grpc.version>
+		<protobuf.version>4.33.0</protobuf.version>
 	</properties>
 
 	<dependencies>
-		<!-- Spring Boot Web starter (for REST endpoints or fallback) -->
+		<!-- Spring Boot Web -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- Spring Boot Test starter for tests -->
+		<!-- Spring Boot JPA -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<!-- PostgreSQL -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
-		<!-- gRPC: Netty shaded transport for public facing gRPC server -->
+		<!-- Kafka (if needed) -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
+		<!-- gRPC dependencies -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
-			<version>1.76.0</version> <!-- latest grpc-java release :contentReference[oaicite:0]{index=0} -->
+			<version>${grpc.version}</version>
 		</dependency>
-
-		<!-- gRPC: protobuf runtime for gRPC generated classes -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-protobuf</artifactId>
-			<version>1.76.0</version>
+			<version>${grpc.version}</version>
 		</dependency>
-
-		<!-- gRPC: stub library for clients and servers -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
-			<version>1.76.0</version>
+			<version>${grpc.version}</version>
 		</dependency>
 
-		<!-- For Java 9+ annotation support (if required) -->
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>annotations-api</artifactId>
-			<version>6.0.53</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Protocol Buffers (core runtime) -->
+		<!-- Protobuf -->
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>4.33.0</version> <!-- recent Protobuf Java version :contentReference[oaicite:1]{index=1} -->
+			<version>${protobuf.version}</version>
 		</dependency>
 
-		<!-- gRPC Spring Boot integration -->
+		<!-- Required for generated gRPC classes -->
 		<dependency>
-			<groupId>net.devh</groupId>
-			<artifactId>grpc-spring-boot-starter</artifactId>
-			<version>3.1.0.RELEASE</version>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>1.3.2</version>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<extensions>
-			<!-- OS plugin to allow protoc to detect platform classifier -->
 			<extension>
 				<groupId>kr.motd.maven</groupId>
 				<artifactId>os-maven-plugin</artifactId>
@@ -93,21 +96,21 @@
 		</extensions>
 
 		<plugins>
-			<!-- Spring Boot Maven plugin -->
+			<!-- Spring Boot plugin -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
-			<!-- Protobuf Maven plugin: generates Java classes from .proto -->
+			<!-- Protobuf Maven plugin -->
 			<plugin>
 				<groupId>org.xolstice.maven.plugins</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
 				<version>0.6.1</version>
 				<configuration>
-					<protocArtifact>com.google.protobuf:protoc:4.33.0:exe:${os.detected.classifier}</protocArtifact>
+					<protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
 					<pluginId>grpc-java</pluginId>
-					<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.76.0:exe:${os.detected.classifier}</pluginArtifact>
+					<pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
 				</configuration>
 				<executions>
 					<execution>

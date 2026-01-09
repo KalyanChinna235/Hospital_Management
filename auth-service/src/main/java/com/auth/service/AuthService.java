@@ -27,4 +27,13 @@ public class AuthService {
         return token;
     }
 
+    public boolean validateToken(String token){
+        try {
+            jwtUtil.validateAndGetClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

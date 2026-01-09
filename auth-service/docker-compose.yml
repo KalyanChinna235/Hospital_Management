@@ -1,14 +1,14 @@
-services:
-  auth-service:
-    image: auth-service:latest
-    container_name: auth-service
-    ports:
-      - "4005:4005"
-    depends_on:
-      - auth-service-db
-    networks:
-      - internal
-
-networks:
-  internal:
-    external: true
+#services:
+#  auth-service:
+#    image: auth-service:latest
+#    container_name: auth-service
+#    ports:
+#      - "4005:4005"
+#    depends_on:
+#      - auth-service-db
+#    networks:
+#      - imicroservices-net
+#
+#networks:
+#  imicroservices-net:
+#    external: true

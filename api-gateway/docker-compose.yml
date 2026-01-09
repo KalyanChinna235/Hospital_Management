@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 services:
   api-gateway:
@@ -9,9 +9,12 @@ services:
     image: api-gateway:latest
     ports:
       - "4004:4004"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:4005
+      PATIENT_SERVICE_URL: http://patient-service:8082
     networks:
-      - microservice-net
+      - microservices-net
 
 networks:
-  microservice-net:
+  microservices-net:
     external: true

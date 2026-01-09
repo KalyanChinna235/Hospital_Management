@@ -4,7 +4,7 @@ services:
     container_name: auth-service-db
     restart: always
     ports:
-      - "5001:5432"
+      - "5001:5432"   # optional (only if you want DB access from host)
     environment:
       POSTGRES_DB: db
       POSTGRES_USER: user_admin
@@ -12,11 +12,11 @@ services:
     volumes:
       - auth_db_data:/var/lib/postgresql/data
     networks:
-      - internal
+      - microservices-net
 
 networks:
-  internal:
-    driver: bridge
+  microservices-net:
+    external: true
 
 volumes:
   auth_db_data:

@@ -13,31 +13,41 @@ import org.springframework.stereotype.Service;
 @Service
 public class BillingServiceGrpcClient {
 
-    private static final Logger log = LoggerFactory.getLogger(
-            BillingServiceGrpcClient.class);
+    private static final Logger log = LoggerFactory.getLogger(BillingServiceGrpcClient.class);
+
     private final BillingServiceGrpc.BillingServiceBlockingStub blockingStub;
 
+    // Constructor injects gRPC server address and port
     public BillingServiceGrpcClient(
             @Value("${billing.service.address:localhost}") String serverAddress,
-            @Value("${billing.service.grpc.port:9001}") int serverPort) {
+            @Value("${billing.service.grpc.port:9001}") int serverPort
+    ) {
+        log.info("Connecting to Billing Service gRPC at {}:{}", serverAddress, serverPort);
 
-        log.info("Connecting to Billing Service GRPC service at {}:{}",
-                serverAddress, serverPort);
+        // Create a channel
+        ManagedChannel channel = ManagedChannelBuilder
+                .forAddress(serverAddress, serverPort)
+                .usePlaintext() // Disable TLS for local/testing
+                .build();
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(serverAddress,
-                serverPort).usePlaintext().build();
-
+        // Create blocking stub for synchronous calls
         blockingStub = BillingServiceGrpc.newBlockingStub(channel);
     }
 
-    public BillingResponse createBillingAccount(String patientId, String name,
-                                                String email) {
+    // Method to create a billing account via gRPC
+    public BillingResponse createBillingAccount(String patientId, String name, String email) {
+        BillingRequest request = BillingRequest.newBuilder()
+                .setPatientId(patientId)
+                .setName(name)
+                .setEmail(email)
+                .build();
 
-        BillingRequest request = BillingRequest.newBuilder().setPatientId(patientId)
-                .setName(name).setEmail(email).build();
+        log.info("Sending request to Billing Service: {}", request);
 
+        // Call gRPC service
         BillingResponse response = blockingStub.createBillingAccount(request);
-        log.info("Received response from billing service via GRPC: {}", response);
+
+        log.info("Received response from Billing Service: {}", response);
         return response;
     }
 }
